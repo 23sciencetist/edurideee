@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EduRide — Prototype</title>
+  <style>
+    :root{--bg:#f7fbff;--primary:#4F9DDE;--accent:#FFD95A;--muted:#6b7280;--card:#ffffff}
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:var(--bg); color:#0f172a}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;background:linear-gradient(90deg,rgba(79,157,222,0.06),transparent);}
+    .logo{display:flex;gap:10px;align-items:center;font-weight:700;color:var(--primary)}
+    .logo .badge{background:var(--primary);color:#fff;padding:8px;border-radius:10px;font-weight:800}
+    nav a{margin-left:18px;color:var(--muted);text-decoration:none}
+    .container{max-width:1100px;margin:28px auto;padding:0 20px}
+    .hero{display:flex;gap:30px;align-items:center}
+    .hero-left{flex:1}
+    .h1{font-size:32px;margin:0 0 12px}
+    .lead{color:var(--muted);margin-bottom:18px}
+    .btn{background:var(--primary);color:#fff;padding:12px 18px;border-radius:12px;border:0;cursor:pointer;font-weight:600}
+    .btn.ghost{background:transparent;color:var(--primary);border:1px solid rgba(79,157,222,0.18)}
+    .card{background:var(--card);padding:18px;border-radius:14px;box-shadow:0 6px 18px rgba(15,23,42,0.06)}
+    .features{display:flex;gap:12px;margin-top:18px}
+    .feature{flex:1;padding:12px;border-radius:10px;border:1px dashed rgba(79,157,222,0.08);text-align:center}
+    .drivers-grid{display:flex;gap:12px;margin-top:18px}
+    .driver{flex:1;padding:12px;border-radius:12px;background:linear-gradient(180deg,#fff, #fbfdff);border:1px solid rgba(15,23,42,0.03)}
+    .driver h4{margin:8px 0}
+    footer{padding:20px;text-align:center;color:var(--muted)}
+    label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+    input[type=text], select, textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #e6edf6;background:#fff}
+    .row{display:flex;gap:12px}
+    .row > *{flex:1}
+    .small{font-size:13px;color:var(--muted)}
+    /* modals */
+    .modal{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center;padding:20px}
+    .modal.open{display:flex}
+    .modal .box{max-width:720px;width:100%}
+    .chip{display:inline-flex;gap:8px;align-items:center;padding:6px 10px;border-radius:999px;background:#f1f9ff;border:1px solid rgba(79,157,222,0.08)}
+    .status{font-size:13px;padding:6px 8px;border-radius:8px}
+    .status.available{background:#ecfdf5;color:#065f46}
+    .status.busy{background:#fff7ed;color:#92400e}
+    .driver-photo{width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg,var(--primary),var(--accent));display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    .controls{display:flex;gap:8px;align-items:center}
+    .ghost-link{background:none;border:0;color:var(--primary);cursor:pointer;font-weight:600}
+    .muted{color:var(--muted)}
+    .rating-stars{display:inline-block}
+    .review{background:#fbfdff;padding:10px;border-radius:8px;margin-top:8px}
+    /* responsive */
+    @media (max-width:900px){.hero{flex-direction:column}.drivers-grid{flex-direction:column}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo"><div class="badge">ER</div><div>EduRide <div class="small muted">Ojek Mahasiswa</div></div></div>
+    <nav>
+      <a href="#home">Beranda</a>
+      <a href="#pesan">Pesan</a>
+      <a href="#drivers">Driver</a>
+      <a href="#tentang">Tentang</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hero" id="home">
+      <div class="hero-left">
+        <h1 class="h1">EduRide — Ojek Mahasiswa Cepat, Aman, dan Hemat</h1>
+        <p class="lead">Layanan antar-jemput dan delivery yang dikelola mahasiswa untuk mahasiswa. Pilih driver, chat langsung, dan bayar dengan tunai, QRIS, atau transfer.</p>
+        <div style="display:flex;gap:12px;align-items:center">
+          <button class="btn" id="btnPesanSekarang">Pesan Sekarang</button>
+          <button class="btn ghost" id="btnLihatDrivers">Lihat Driver</button>
+        </div>
+
+        <div class="features">
+          <div class="feature">🎓 Driver dari Fakultas Keguruan (FKIP)</div>
+          <div class="feature">🛵 Antar-Jemput & Delivery</div>
+          <div class="feature">⭐ Chat internal & Rating</div>
+        </div>
+      </div>
+
+      <div style="flex:0.9">
+        <div class="card">
+          <h3 style="margin:0 0 8px">Form Ringkas Pesan</h3>
+          <div style="display:grid;gap:8px">
+            <label>Nama Customer</label>
+            <input id="inputNama" type="text" placeholder="Masukkan nama..." />
+            <label>Jenis Layanan</label>
+            <select id="selectLayanan">
+              <option value="ojek">Ojek (Antar-jemput)</option>
+              <option value="delivery">Delivery</option>
+            </select>
+            <label>Tujuan / Lokasi</label>
+            <input id="inputTujuan" type="text" placeholder="Contoh: Gerbang UT, Perpustakaan" />
+            <div style="display:flex;gap:8px">
+              <button class="btn" id="btnCariDriver">Cari Driver Terdekat</button>
+              <button class="btn ghost" id="btnReset">Reset</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px">
+          <h4 style="margin:0 0 8px">Driver Terdekat</h4>
+          <div class="drivers-grid" id="driversContainer">
+            <!-- driver cards inserted by JS -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section id="drivers" style="margin-top:22px">
+      <h3>Daftar Driver</h3>
+      <div class="card" style="margin-top:8px">
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+          <div style="flex:1">
+            <div id="driverList">
+              <!-- driver list -->
+            </div>
+          </div>
+          <div style="width:220px">
+            <div class="card">
+              <h4 style="margin:0 0 8px">Info Singkat</h4>
+              <p class="small muted">Klik tombol "Chat" untuk membuka chat internal, atau klik "WhatsApp" untuk menghubungi driver lewat WhatsApp Web/WA.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tentang" style="margin-top:22px">
+      <h3>Tentang EduRide</h3>
+      <div class="card small muted">EduRide adalah layanan ojek dan delivery khusus mahasiswa, dijalankan oleh mahasiswa FKIP. Prototipe ini hanya demo antarmuka — fitur nyata seperti real-time location, pembayaran dan backend harus diimplementasikan pada tahap pengembangan selanjutnya.</div>
+    </section>
+
+  </main>
+
+  <footer>
+    © EduRide — Prototype UI • Developed for demo
+  </footer>
+
+  <!-- Modals -->
+  <div class="modal" id="modalChat">
+    <div class="box card">
+      <h3 id="chatTitle">Chat</h3>
+      <div id="chatWindow" style="height:320px;overflow:auto;padding:10px;border-radius:8px;border:1px solid #eaf3ff;background:#fff;margin-bottom:10px"></div>
+      <div style="display:flex;gap:8px">
+        <input id="chatInput" type="text" placeholder="Tulis pesan..." />
+        <button class="btn" id="sendChat">Kirim</button>
+        <button class="btn ghost" id="closeChat">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalPayment">
+    <div class="box card">
+      <h3>Pembayaran</h3>
+      <div style="display:flex;gap:12px">
+        <div style="flex:1">
+          <label>Pilih Metode</label>
+          <select id="selectPayment">
+            <option value="tunai">Tunai</option>
+            <option value="qris">QRIS (Tampilkan QR)</option>
+            <option value="transfer">Transfer (Info Rekening)</option>
+          </select>
+          <div id="paymentInstr" style="margin-top:12px" class="small muted">Pilih metode pembayaran untuk melihat instruksi.</div>
+        </div>
+        <div style="width:220px">
+          <div id="selectedDriverBox" class="card small">
+            <strong>Driver Terpilih</strong>
+            <div id="selDriverInfo" style="margin-top:8px"></div>
+            <div style="margin-top:10px"><button class="btn" id="confirmOrder">Pesan & Hubungi Driver</button></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:8px;text-align:right"><button class="btn ghost" id="closePayment">Tutup</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="modalRating">
+    <div class="box card">
+      <h3>Berikan Rating</h3>
+      <div>
+        <label>Rating (1-5)</label>
+        <select id="ratingSelect">
+          <option value="5">5 - Sangat Baik</option>
+          <option value="4">4 - Baik</option>
+          <option value="3">3 - Cukup</option>
+          <option value="2">2 - Kurang</option>
+          <option value="1">1 - Buruk</option>
+        </select>
+        <label style="margin-top:8px">Ulasan singkat</label>
+        <textarea id="reviewText" rows="4"></textarea>
+        <div style="margin-top:10px;text-align:right"><button class="btn" id="submitRating">Kirim Rating</button> <button class="btn ghost" id="closeRating">Tutup</button></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Data driver contoh
+    const drivers = [
+      {id:1,name:'Faiq',faculty:'FKIP',phone:'+6281939770055',status:'available',rating:4.8,reviews:50},
+      {id:2,name:'Nadila',faculty:'FKIP',phone:'+6281335580294',status:'busy',rating:4.6,reviews:34},
+      {id:3,name:'Nuzil',faculty:'FKIP',phone:'+6285234468824',status:'available',rating:4.9,reviews:62}
+    ];
+
+    const driversContainer = document.getElementById('driversContainer');
+    const driverList = document.getElementById('driverList');
+
+    function renderDriverCards(list){
+      driversContainer.innerHTML = '';
+      list.forEach(d => {
+        const div = document.createElement('div'); div.className='driver card';
+        div.innerHTML = `
+          <div style="display:flex;gap:12px;align-items:center">
+            <div class="driver-photo">${d.name[0]}</div>
+            <div style="flex:1">
+              <h4>${d.name}</h4>
+              <div class="small muted">${d.faculty}</div>
+              <div style="margin-top:6px"><span class="status ${d.status==='available'?'available':'busy'}">${d.status==='available'?'Tersedia':'Sibuk'}</span></div>
+            </div>
+            <div class="controls">
+              <button class="ghost-link" onclick="openChat(${d.id})">Chat</button>
+              <button class="ghost-link" onclick="openWhatsApp(${d.id})">WhatsApp</button>
+            </div>
+          </div>
+        `;
+        driversContainer.appendChild(div);
+      });
+    }
+
+    function renderDriverList(){
+      driverList.innerHTML = drivers.map(d=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid #f1f7ff">
+          <div style="display:flex;gap:10px;align-items:center"><div class="driver-photo">${d.name[0]}</div><div><strong>${d.name}</strong><div class="small muted">${d.faculty}</div></div></div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <div class="status ${d.status==='available'?'available':'busy'}">${d.status==='available'?'Tersedia':'Sibuk'}</div>
+            <button class="ghost-link" onclick="openChat(${d.id})">Chat</button>
+            <button class="ghost-link" onclick="openWhatsApp(${d.id})">WhatsApp</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderDriverCards(drivers);
+    renderDriverList();
+
+    // Simulasi "nearest" = filter available
+    document.getElementById('btnCariDriver').addEventListener('click', ()=>{
+      const name = document.getElementById('inputNama').value.trim();
+      const tujuan = document.getElementById('inputTujuan').value.trim();
+      if(!name || !tujuan){alert('Isi nama dan tujuan terlebih dahulu.');return}
+      const nearest = drivers.filter(d=>d.status==='available');
+      if(nearest.length===0){alert('Tidak ada driver tersedia saat ini.')} else {
+        renderDriverCards(nearest);
+        alert('Menampilkan driver terdekat (simulasi: driver tersedia). Pilih driver untuk melanjutkan.');
+      }
+    });
+
+    document.getElementById('btnReset').addEventListener('click', ()=>{document.getElementById('inputNama').value='';document.getElementById('inputTujuan').value='';renderDriverCards(drivers);});
+
+    // Open payment modal when select driver
+    let selectedDriver = null;
+    function openPaymentForDriver(id){
+      selectedDriver = drivers.find(d=>d.id===id);
+      document.getElementById('selectedDriverBox').style.display='block';
+      document.getElementById('selDriverInfo').innerHTML = `<strong>${selectedDriver.name}</strong><div class="small muted">${selectedDriver.faculty}</div><div style="margin-top:6px">Rating: ${selectedDriver.rating} (${selectedDriver.reviews} ulasan)</div>`;
+      document.getElementById('modalPayment').classList.add('open');
+    }
+
+    // add pick buttons to cards after render
+    function attachPickButtons(){
+      const controls = document.querySelectorAll('.driver');
+      // re-render driver cards includes pick on click (we'll add overlays)
+      // Simpler: add click on card to open payment
+      document.querySelectorAll('.driver').forEach((el, idx)=>{
+        el.style.cursor='pointer';
+        el.addEventListener('click', ()=>{
+          const name = el.querySelector('h4').textContent;
+          const d = drivers.find(x=>x.name===name);
+          if(d) openPaymentForDriver(d.id);
+        });
+      });
+    }
+
+    // run attach after initial render
+    setTimeout(attachPickButtons,100);
+
+    // when drivers re-render, re-attach
+    const origRender = renderDriverCards;
+    // (we won't override; instead call attach from places we re-render)
+
+    // open chat modal
+    const modalChat = document.getElementById('modalChat');
+    const chatWindow = document.getElementById('chatWindow');
+    const chatTitle = document.getElementById('chatTitle');
+    let chatWith = null;
+
+    function openChat(id){
+      chatWith = drivers.find(d=>d.id===id);
+      chatTitle.innerText = `Chat dengan ${chatWith.name}`;
+      modalChat.classList.add('open');
+      renderChatHistory();
+    }
+    document.getElementById('closeChat').addEventListener('click', ()=>{modalChat.classList.remove('open')});
+
+    function renderChatHistory(){
+      const key = `chat_${chatWith.id}`;
+      const msgs = JSON.parse(localStorage.getItem(key)||'[]');
+      chatWindow.innerHTML = msgs.map(m=>`<div style="margin:6px 0;padding:8px;border-radius:8px;max-width:80%;${m.from==='me'?'background:#e6f3ff;margin-left:auto':'background:#f3f4f6;margin-right:auto'}">${escapeHtml(m.text)}</div>`).join('');
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    document.getElementById('sendChat').addEventListener('click', ()=>{
+      const txt = document.getElementById('chatInput').value.trim(); if(!txt) return;
+      const key = `chat_${chatWith.id}`;
+      const msgs = JSON.parse(localStorage.getItem(key)||'[]');
+      msgs.push({from:'me',text:txt,ts:Date.now()});
+      // simple auto-reply from driver if available
+      if(chatWith.status==='available') msgs.push({from:'driver',text:'Siap, saya menuju lokasi Anda. (simulasi)',ts:Date.now()+500});
+      localStorage.setItem(key,JSON.stringify(msgs));
+      document.getElementById('chatInput').value='';
+      renderChatHistory();
+    });
+
+    // WhatsApp link
+    function openWhatsApp(id){
+      const d = drivers.find(x=>x.id===id);
+      const nama = document.getElementById('inputNama').value || 'Customer';
+      const tujuan = document.getElementById('inputTujuan').value || '';
+      const msg = encodeURIComponent(`Halo ${d.name}, saya ${nama}. Saya mau pesan layanan. Tujuan: ${tujuan}`);
+      // whatsapp web link
+      const wa = `https://wa.me/${d.phone.replace(/[^0-9]/g,'')}?text=${msg}`;
+      window.open(wa,'_blank');
+    }
+
+    // payment modal actions
+    document.getElementById('closePayment').addEventListener('click', ()=>document.getElementById('modalPayment').classList.remove('open'));
+    document.getElementById('selectPayment').addEventListener('change', (e)=>{
+      const v = e.target.value; const instr = document.getElementById('paymentInstr');
+      if(v==='tunai') instr.innerHTML = 'Bayar tunai langsung kepada driver saat tiba.';
+      if(v==='qris') instr.innerHTML = 'Tunjukkan QRIS ini ke driver. (Contoh QR di bawah) <div style="margin-top:8px;padding:12px;border-radius:8px;background:#fff;text-align:center">[QRIS - placeholder]</div>';
+      if(v==='transfer') instr.innerHTML = 'Transfer ke rekening: 1234567890 (Bank Demo) a.n EduRide';
+    });
+
+    document.getElementById('confirmOrder').addEventListener('click', ()=>{
+      document.getElementById('modalPayment').classList.remove('open');
+      if(!selectedDriver){alert('Pilih driver dulu.');return}
+      // simulate order created
+      alert(`Pesanan dibuat dengan driver ${selectedDriver.name}. Anda akan diarahkan ke WhatsApp untuk konfirmasi.`);
+      openWhatsApp(selectedDriver.id);
+    });
+
+    // open payment when clicking confirm pick
+    // (we already open payment on card click)
+
+    // when user clicks Pesan Sekarang
+    document.getElementById('btnPesanSekarang').addEventListener('click', ()=>{
+      document.getElementById('inputNama').focus();
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+    document.getElementById('btnLihatDrivers').addEventListener('click', ()=>{location.href='#drivers'});
+
+    // rating modal
+    document.getElementById('submitRating').addEventListener('click', ()=>{
+      const val = Number(document.getElementById('ratingSelect').value);
+      const text = document.getElementById('reviewText').value.trim();
+      if(!selectedDriver){alert('Tidak ada driver yang dipilih. Pilih driver lalu beri rating.');return}
+      // store review (simple)
+      const key = `reviews_${selectedDriver.id}`;
+      const arr = JSON.parse(localStorage.getItem(key)||'[]');
+      arr.push({rating:val,review:text,ts:Date.now()});
+      localStorage.setItem(key,JSON.stringify(arr));
+      alert('Terima kasih atas ulasan Anda! (disimpan di browser)');
+      document.getElementById('modalRating').classList.remove('open');
+    });
+    document.getElementById('closeRating').addEventListener('click', ()=>document.getElementById('modalRating').classList.remove('open'));
+
+    // small helper
+    function escapeHtml(unsafe){return unsafe.replace(/[&<"'`=\/]/g, function(s){return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','/':'&#47;','`':'&#96;','=':'&#61;'})[s];});}
+
+    // attach pick logic on re-renders (for demo, re-call after filtering)
+    const origCari = document.getElementById('btnCariDriver').onclick;
+    const observer = new MutationObserver(()=>{attachPickButtons();});
+    observer.observe(driversContainer,{childList:true});
+
+    // expose openPaymentForDriver to global so clicking works
+    window.openPaymentForDriver = openPaymentForDriver;
+    window.openChat = openChat;
+    window.openWhatsApp = openWhatsApp;
+
+    // initial instruction: attach pick buttons
+    setTimeout(attachPickButtons,200);
+  </script>
+</body>
+</html>
